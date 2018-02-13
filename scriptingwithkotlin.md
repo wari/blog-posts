@@ -10,9 +10,9 @@ In this post, we are going to create a queue browser in just a few lines of code
 
 ## Setting up the environment
 
-We have to install a few things before we can get scripting with Kotlin. While Kotlin comes with scripting support, it is not exactly that friendly. This guide assumes that you are running on a unix based system, for example, Mac OS X, Linux or even Ubuntu for Windows. It is possible to do this in Windows, but I've not tried it, so your mileage may vary.
+We have to install a few things before we can get scripting with Kotlin. While Kotlin comes with scripting support, it is not exactly that friendly to use. This guide assumes that you are running on a unix based system, for example, Mac OS X, Linux or even Ubuntu for Windows. It is possible to do this in Windows, but I've not tried it, so your mileage may vary.
 
-You will need to install 3 software components (other than your JDK of choice). These are Kotlin, Maven and kscript.
+You will need to install 3 software components (other than your JDK of choice). These are Kotlin, Maven and `kscript`.
 
 ### Installing Kotlin
 
@@ -75,53 +75,50 @@ OS name: "mac os x", version: "10.12.5", arch: "x86_64", family: "mac"
 
 ### `kscript` installation
 
-[kscript](https://github.com/holgerbrandl/kscript) is a convenient wrapper for running Kotlin scripts. It will also integrate with Maven to download libraries for you, for example, the needed Solace JCSMP libraries for this example script. To install this, you will have to download 2 files from the github repository into a directory that's on your `$PATH`. I have `~/bin` in my path where I keep all my miscellaneous scripts.
+[kscript](https://github.com/holgerbrandl/kscript) is a convenient wrapper for running Kotlin scripts. It will also integrate with Maven to download libraries for you, for example, the needed Solace JCSMP libraries for this example script. you can use `sdkman` to install kscript:
 
 ``` shell
-$ cd ~/bin
-$ curl -O https://raw.githubusercontent.com/holgerbrandl/kscript/master/kscript
-$ curl -O https://raw.githubusercontent.com/holgerbrandl/kscript/master/resdeps.kts
-$ chmod +x kscript resdeps.kts
+sdk install kscript
+Downloading: kscript 2.4.0
+
+In progress...
+
+################################################################# 100.0%
+
+Installing: kscript 2.4.0
+Done installing!
+
+Setting kscript 2.4.0 as default.
 ```
 
-Check if you can run both programs you downloaded:
+Ensure that you can run `kscript`.
 
 ``` shell
-$ kscript
+$ kscript 
 kscript - Enhanced scripting support for Kotlin on *nix-based systems.
 
-Usage     : kscript <scriptfile, script-url, - for stdin, some kotlin code> [<script_args>]*
-Usage     : kscript --clear-cache     # wipe cached script jars and urls
-Usage     : kscript -i                # interactive shell with DEPS as declared in script
+Usage:
+ kscript [options] <script> [<script_args>]...
+ kscript --clear-cache
+ kscript --self-update
+
+The <script> can be a  script file (*kts), a script URL, - for stdin, a *.kt source file with a main method, or some kotlin code.
+
+Use '--clear-cache' to wipe cached script jars and urls
+Use '--self-update' to update kscript to the latest version
+
+Options:
+ -i --interactive        Create interactive shell with dependencies as declared in script
+ -t --text               Enable stdin support API for more streamlined text processing
+ --idea                  Open script in temporary Intellij session
+ -s --silent             Suppress status logging to stderr
+ --package               Package script and dependencies into self-dependent binary
+
 
 Copyright : 2017 Holger Brandl
 License   : MIT
-Version   : v1.5.2
+Version   : v2.4.0
 Website   : https://github.com/holgerbrandl/kscript
-
-$ ./resdeps.kts --help
-resdeps.kts resolves a space separated list of gradle-style resource locators
-into a classpath suitable for use with 'java -cp' or 'kotlin -cp'. resdeps.kts
-will use maven to resolve dependencies.
-
-For details see https://github.com/holgerbrandl/kscript
-
-## Example
-
-resdeps.kts org.apache.commons:commons-csv:1.3 log4j:log4j:1.2.14
-
-## Features
-
-* Support for transitive Maven dependencies
-* Caching of dependency requests (cached requests take just around 30ms). Use
-  `resdeps.kts --clear-cache` to clear this cache in case the dependency tree
-  has changed
-
-## Copyright
-
-2017 Holger Brandl
-
-Inspired by mvncp created by Andrew O'Malley
 ```
 
 ## Creating our browser script.
@@ -171,7 +168,7 @@ val myBrowser = session.createBrowser(BrowserProperties().apply {
 browse(myBrowser)
 ```
 
-In the browse funtion, we loop forever waiting for a new message in the queue and dump it to screen. If the message is of type TextMessage, print out the text.
+In the browse function, we loop forever waiting for a new message in the queue and dump it to screen. If the message is of type TextMessage, print out the text.
 
 ``` kotlin
 fun browse(browser: Browser) {
